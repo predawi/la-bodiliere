@@ -6,17 +6,18 @@ export default defineNuxtConfig({
 
   modules: ["@nuxtjs/google-fonts", "@nuxtjs/supabase"],
 
-  // googleFonts: {
-  //   families: {
-  //     "Dancing Script": {
-  //       wght: "500",
-  //     },
-  //     "Open Sans": {
-  //       wght: [400, 700],
-  //       ital: [400, 700],
-  //     },
-  //   },
-  // },
+  googleFonts: {
+    download: false,
+    families: {
+      "Dancing Script": {
+        wght: "500",
+      },
+      "Open Sans": {
+        wght: [400, 700],
+        ital: [400, 700],
+      },
+    },
+  },
 
   supabase: {
     redirect: false,
