@@ -45,12 +45,12 @@ onMounted(() => {
 </script>
 
 <template>
-  <h2 class="mb-6 flex items-center text-xl">
+  <h2 class="mb-6 md:flex items-center md:text-xl">
     Prochaines réservations à la <span class="font-custom text-2xl text-bodil-800">&nbsp;Bodilière&nbsp;</span> :
   </h2>
 
 
-  <div v-if="bookings.length" class="grid grid-cols-4 font-bold">
+  <div v-if="bookings.length" class="grid grid-cols-3 md:grid-cols-4 font-bold">
     <div class="pl-3">Qui ?</div>
     <div>A partir du :</div>
     <div>Jusqu'au :</div>
@@ -63,14 +63,14 @@ onMounted(() => {
 
   <div v-for="booking in bookings" :key="booking.id" class="mt-4">
     <div class="card group">
-      <div class="md:grid grid-cols-4">
+      <div class="grid grid-cols-3 md:grid-cols-4">
         <div class="flex items-center"><span class="font-custom text-xl">{{ booking.name }}</span></div>
         <div class="flex items-center">{{ formatDateFR(booking.start_date) }}</div>
         <div class="flex items-center">{{ formatDateFR(booking.end_date) }}</div>
         <div class="flex items-center justify-end">
           <button @click.prevent="openDeleteModal" :booking="booking.id" :disabled="loading"
-            class="items-center text-red-600 hidden group-hover:inline-flex">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="mr-4">
+            class="items-center text-red-600 hidden md:group-hover:inline-flex">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="mr-2">
               <path fill="currentColor"
                 d="m9.4 16.5l2.6-2.6l2.6 2.6l1.4-1.4l-2.6-2.6L16 9.9l-1.4-1.4l-2.6 2.6l-2.6-2.6L8 9.9l2.6 2.6L8 15.1zM7 21q-.825 0-1.412-.587T5 19V6H4V4h5V3h6v1h5v2h-1v13q0 .825-.587 1.413T17 21zM17 6H7v13h10zM7 6v13z" />
             </svg>
@@ -78,6 +78,14 @@ onMounted(() => {
           </button>
         </div>
       </div>
+      <button @click.prevent="openDeleteModal" :booking="booking.id" :disabled="loading"
+        class="flex items-center text-red-600 md:hidden ml-auto mt-4">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="mr-2">
+          <path fill="currentColor"
+            d="m9.4 16.5l2.6-2.6l2.6 2.6l1.4-1.4l-2.6-2.6L16 9.9l-1.4-1.4l-2.6 2.6l-2.6-2.6L8 9.9l2.6 2.6L8 15.1zM7 21q-.825 0-1.412-.587T5 19V6H4V4h5V3h6v1h5v2h-1v13q0 .825-.587 1.413T17 21zM17 6H7v13h10zM7 6v13z" />
+        </svg>
+        <span>Supprimer</span>
+      </button>
     </div>
   </div>
 
@@ -87,7 +95,7 @@ onMounted(() => {
     <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
 
     <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
-      <div class="flex min-h-full items-end justify-center p-4 text-center sm:items-center sm:p-0">
+      <div class="flex min-h-full items-end justify-center p-4 text-center items-center sm:p-0">
         <div
           class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
           <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
@@ -110,7 +118,7 @@ onMounted(() => {
               @click.prevent="deleteBooking" :booking="bookingDeleteId">Confirmer</button>
 
             <button type="button"
-              class="inline-flex w-full justify-center rounded-md bg-bodil-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-bodil-500 sm:ml-3 sm:w-auto"
+              class="inline-flex w-full justify-center rounded-md bg-bodil-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-bodil-500 sm:ml-3 sm:w-auto mt-4 md:mt-0"
               @click.prevent="modalOpen = false">Annuler</button>
           </div>
         </div>
