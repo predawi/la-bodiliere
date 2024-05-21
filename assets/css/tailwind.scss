@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .card {
+    @apply shadow-sm border border-bodil-500 bg-gradient-to-r from-bodil-50 to-bodil-200 rounded-xl p-4 mb-2 flex-1;
+  }
+}
+
+body {
+  font-family: 'Open Sans', sans-serif;
+}
+
+.font-custom {
+  font-family: 'Dancing Script', serif;
+}
