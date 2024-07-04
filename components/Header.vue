@@ -14,7 +14,7 @@
         <ul class="flex gap-4 justify-center md:justify-start mt-10 md:mt-0">
           <li>
             <NuxtLink to="/signup"
-              class="text-white bg-bodil-700 hover:bg-bodil-800 focus:ring-4 focus:ring-bodil-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-bodil-600 dark:hover:bg-bodil-700 focus:outline-none dark:focus:ring-bodil-800 shadow-sm">
+              class="text-white bg-bodil-700 hover:bg-bodil-800 focus:ring-4 focus:ring-bodil-300 font-medium rounded-md text-sm px-5 py-2.5 me-2 mb-2 dark:bg-bodil-600 dark:hover:bg-bodil-700 focus:outline-none dark:focus:ring-bodil-800 shadow-sm">
               Réserver un créneau</NuxtLink>
           </li>
         </ul>

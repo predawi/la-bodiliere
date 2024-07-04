@@ -28,6 +28,7 @@ async function addBooking() {
     loading.value = false
   }
 }
+
 </script>
 
 <template>
@@ -63,7 +64,7 @@ async function addBooking() {
         </form>
       </div>
 
-      <!-- MODAL -->
+      <!-- MODAL SUCCESS -->
       <div :class="success ? 'relative z-10' : 'relative z-10 hidden'" aria-labelledby="modal-semi" id="modalAddBooking"
         role="dialog" aria-modal="true">
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
@@ -95,6 +96,7 @@ async function addBooking() {
           </div>
         </div>
       </div>
+
     </div>
   </div>
 </template>

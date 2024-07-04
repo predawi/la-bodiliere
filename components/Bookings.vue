@@ -1,29 +1,41 @@
-<script setup>
+<script setup lang="ts">
 import { createClient } from '@supabase/supabase-js'
 
 const supabase = createClient('https://avpzcqjfdludlryulhfz.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2cHpjcWpmZGx1ZGxyeXVsaGZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTU5NDk1NjMsImV4cCI6MjAzMTUyNTU2M30.lCzfuVacJIa0aSRLcYPfDXgvj8V-2N-Vsu7NhOB7Jy8')
-const bookings = ref([])
+const bookings: any = ref([])
 const loading = ref(false)
 const modalOpen = ref(false)
-let bookingDeleteId = ref(false)
+let bookingDeleteId: any = ref([])
 
 async function getBookings() {
-  const { data } = await supabase.from('bookings').select().order('start_date', { ascending: true })
+  // Get current date for filtering
+  const dateNow = new Date()
+  const formatedDateNow = dateNow.getFullYear() + '-' + ('0' + (dateNow.getMonth() + 1)).slice(-2) + '-' + ('0' + dateNow.getDate()).slice(-2)
+
+  // Get bookings list greater than now
+  const { data } = await supabase.from('bookings').select().order('start_date', { ascending: true }).gt('start_date', formatedDateNow)
   bookings.value = data
 }
 
-function formatDateFR(rawDate) {
+function formatDateFR(rawDate: Date) {
   let formatedDate = new Date(rawDate)
   return formatedDate.toLocaleDateString('fr-FR')
 }
 
-function openDeleteModal(e) {
+function openDeleteModal(e: Event) {
+  if (!e.currentTarget) return
+
   modalOpen.value = true
-  bookingDeleteId = e.currentTarget.getAttribute('booking')
+
+  const target = e.currentTarget as HTMLButtonElement;
+  bookingDeleteId = target.getAttribute('booking')
 }
 
-async function deleteBooking(e) {
-  let bookingID = e.currentTarget.getAttribute('booking')
+async function deleteBooking(e: Event) {
+  if (!e.currentTarget) return
+
+  const target = e.currentTarget as HTMLButtonElement;
+  let bookingID = target.getAttribute('booking')
 
   try {
     loading.value = true
@@ -45,47 +57,49 @@ onMounted(() => {
 </script>
 
 <template>
-  <h2 class="mb-6 md:flex items-center md:text-xl">
-    Prochaines réservations à la <span class="font-custom text-2xl text-bodil-800">&nbsp;Bodilière&nbsp;</span> :
-  </h2>
+  <div>
+    <h2 class="mb-6 md:flex items-center md:text-xl">
+      Prochaines réservations à la <span class="font-custom text-2xl text-bodil-800">&nbsp;Bodilière&nbsp;</span>
+    </h2>
 
 
-  <div v-if="bookings.length" class="grid grid-cols-3 md:grid-cols-4 font-bold">
-    <div class="pl-3">Qui ?</div>
-    <div>A partir du :</div>
-    <div>Jusqu'au :</div>
-  </div>
+    <div v-if="bookings.length" class="grid grid-cols-3 md:grid-cols-4 font-bold px-4">
+      <div>Qui ?</div>
+      <div class="ml-4">A partir du :</div>
+      <div>Jusqu'au :</div>
+    </div>
 
-  <div class="card" v-if="!bookings.length">
-    Aucune réservation pour le moment
-  </div>
+    <div class="card" v-if="!bookings.length">
+      Aucune réservation pour le moment
+    </div>
 
 
-  <div v-for="booking in bookings" :key="booking.id" class="mt-4">
-    <div class="card group">
-      <div class="grid grid-cols-3 md:grid-cols-4">
-        <div class="flex items-center"><span class="font-custom text-xl">{{ booking.name }}</span></div>
-        <div class="flex items-center">{{ formatDateFR(booking.start_date) }}</div>
-        <div class="flex items-center">{{ formatDateFR(booking.end_date) }}</div>
-        <div class="flex items-center justify-end">
-          <button @click.prevent="openDeleteModal" :booking="booking.id" :disabled="loading"
-            class="items-center text-red-600 hidden md:group-hover:inline-flex">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="mr-2">
-              <path fill="currentColor"
-                d="m9.4 16.5l2.6-2.6l2.6 2.6l1.4-1.4l-2.6-2.6L16 9.9l-1.4-1.4l-2.6 2.6l-2.6-2.6L8 9.9l2.6 2.6L8 15.1zM7 21q-.825 0-1.412-.587T5 19V6H4V4h5V3h6v1h5v2h-1v13q0 .825-.587 1.413T17 21zM17 6H7v13h10zM7 6v13z" />
-            </svg>
-            <span>Supprimer</span>
-          </button>
+    <div v-for="booking in bookings" :key="booking.id" class="mt-4">
+      <div class="card group">
+        <div class="grid grid-cols-3 md:grid-cols-4">
+          <div class="flex items-center"><span class="font-custom text-2xl">{{ booking.name }}</span></div>
+          <div class="flex items-center ml-4">{{ formatDateFR(booking.start_date) }}</div>
+          <div class="flex items-center">{{ formatDateFR(booking.end_date) }}</div>
+          <div class="flex items-center justify-end">
+            <button @click.prevent="openDeleteModal" :booking="booking.id" :disabled="loading"
+              class="items-center text-red-600 hidden md:group-hover:inline-flex">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="mr-2">
+                <path fill="currentColor"
+                  d="m9.4 16.5l2.6-2.6l2.6 2.6l1.4-1.4l-2.6-2.6L16 9.9l-1.4-1.4l-2.6 2.6l-2.6-2.6L8 9.9l2.6 2.6L8 15.1zM7 21q-.825 0-1.412-.587T5 19V6H4V4h5V3h6v1h5v2h-1v13q0 .825-.587 1.413T17 21zM17 6H7v13h10zM7 6v13z" />
+              </svg>
+              <span>Supprimer</span>
+            </button>
+          </div>
         </div>
+        <button @click.prevent="openDeleteModal" :booking="booking.id" :disabled="loading"
+          class="flex items-center text-red-600 md:hidden ml-auto mt-4">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="mr-2">
+            <path fill="currentColor"
+              d="m9.4 16.5l2.6-2.6l2.6 2.6l1.4-1.4l-2.6-2.6L16 9.9l-1.4-1.4l-2.6 2.6l-2.6-2.6L8 9.9l2.6 2.6L8 15.1zM7 21q-.825 0-1.412-.587T5 19V6H4V4h5V3h6v1h5v2h-1v13q0 .825-.587 1.413T17 21zM17 6H7v13h10zM7 6v13z" />
+          </svg>
+          <span>Supprimer</span>
+        </button>
       </div>
-      <button @click.prevent="openDeleteModal" :booking="booking.id" :disabled="loading"
-        class="flex items-center text-red-600 md:hidden ml-auto mt-4">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" class="mr-2">
-          <path fill="currentColor"
-            d="m9.4 16.5l2.6-2.6l2.6 2.6l1.4-1.4l-2.6-2.6L16 9.9l-1.4-1.4l-2.6 2.6l-2.6-2.6L8 9.9l2.6 2.6L8 15.1zM7 21q-.825 0-1.412-.587T5 19V6H4V4h5V3h6v1h5v2h-1v13q0 .825-.587 1.413T17 21zM17 6H7v13h10zM7 6v13z" />
-        </svg>
-        <span>Supprimer</span>
-      </button>
     </div>
   </div>
 
