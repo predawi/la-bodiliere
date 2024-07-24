@@ -16,7 +16,7 @@ const weatherIcon = "https://openweathermap.org/img/wn/" + rawData.weather[0].ic
       <div class="p-4 text-center">
         <div class="space-y-2">
           <h2 class="font-bold">{{ rawData.name }}</h2>
-          <img :src=weatherIcon alt="" class="w-15 h-15 mx-auto">
+          <img :src=weatherIcon alt="" width="100" height="100" class="w-15 h-15 mx-auto">
           <div class="capitalize">{{ rawData.weather[0].description }}</div>
           <div class="flex items-center justify-center">
             <IconsTemp class="mr-2" /> Temp: {{ Math.round((rawData.main.temp - 273.15)) }}°c

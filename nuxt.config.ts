@@ -4,7 +4,7 @@ export default defineNuxtConfig({
 
   css: ["~/assets/css/tailwind.scss"],
 
-  modules: ["@nuxtjs/google-fonts", "@nuxtjs/supabase"],
+  modules: ["@nuxtjs/google-fonts", "@nuxtjs/supabase", "@nuxt/image"],
 
   googleFonts: {
     download: false,
@@ -21,6 +21,10 @@ export default defineNuxtConfig({
 
   supabase: {
     redirect: false,
+  },
+
+  image: {
+    format: ["webp", "avif"],
   },
 
   postcss: {
