@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { createClient } from '@supabase/supabase-js'
 import { useDateFormat, useNow } from '@vueuse/core'
 
 const currentDate = useDateFormat(useNow(), 'YYYY-MM-DD')
 
-const supabase = createClient('https://avpzcqjfdludlryulhfz.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2cHpjcWpmZGx1ZGxyeXVsaGZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTU5NDk1NjMsImV4cCI6MjAzMTUyNTU2M30.lCzfuVacJIa0aSRLcYPfDXgvj8V-2N-Vsu7NhOB7Jy8')
+const supabase = useSupabaseClient()
 
 const bookings: any = ref([])
 const loading = ref(false)
