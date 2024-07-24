@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  :root {
+    --bodil-50: oklch(98.26% 0.017 201.4 / 50%);
+    --bodil-100: oklch(95.66% 0.043 201.79 / 50%);
+    --bodil-200: oklch(91.73% 0.074 202.27 / 50%);
+  }
+}
+
 @layer components {
   .card {
     @apply shadow-sm border border-bodil-500 bg-gradient-to-r from-bodil-50 to-bodil-200 rounded-md p-4 mb-2 flex-1;
@@ -14,4 +22,8 @@ body {
 
 .font-custom {
   font-family: 'Dancing Script', serif;
+}
+
+.DefaultLayout {
+  background-color: var(--bodil-50);
 }

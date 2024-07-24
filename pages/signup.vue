@@ -1,4 +1,8 @@
-<script setup>
+<script setup lang="ts">
+import { useDateFormat, useNow } from '@vueuse/core'
+
+const currentDate = useDateFormat(useNow(), 'YYYY-MM-DD')
+
 const supabase = useSupabaseClient()
 const loading = ref(false)
 const success = ref(false)
@@ -45,13 +49,13 @@ async function addBooking() {
           </div>
           <div>
             <label for="start_date" class="block mb-2">De quand ?</label>
-            <input id="start_date" type="date" v-model="start_date"
+            <input id="start_date" type="date" v-model="start_date" :min=currentDate
               class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-bodil-500 focus:border-bodil-500 block w-full p-2.5"
               required />
           </div>
           <div>
             <label for="end_date" class="block mb-2">A quand ?</label>
-            <input id="end_date" type="date" v-model="end_date"
+            <input id="end_date" type="date" v-model="end_date" :min=currentDate
               class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-bodil-500 focus:border-bodil-500 block w-full p-2.5"
               required />
           </div>

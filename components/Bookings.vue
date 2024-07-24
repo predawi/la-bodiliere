@@ -1,19 +1,19 @@
 <script setup lang="ts">
 import { createClient } from '@supabase/supabase-js'
+import { useDateFormat, useNow } from '@vueuse/core'
+
+const currentDate = useDateFormat(useNow(), 'YYYY-MM-DD')
 
 const supabase = createClient('https://avpzcqjfdludlryulhfz.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2cHpjcWpmZGx1ZGxyeXVsaGZ6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTU5NDk1NjMsImV4cCI6MjAzMTUyNTU2M30.lCzfuVacJIa0aSRLcYPfDXgvj8V-2N-Vsu7NhOB7Jy8')
+
 const bookings: any = ref([])
 const loading = ref(false)
 const modalOpen = ref(false)
 let bookingDeleteId: any = ref([])
 
 async function getBookings() {
-  // Get current date for filtering
-  const dateNow = new Date()
-  const formatedDateNow = dateNow.getFullYear() + '-' + ('0' + (dateNow.getMonth() + 1)).slice(-2) + '-' + ('0' + dateNow.getDate()).slice(-2)
-
   // Get bookings list greater than now
-  const { data } = await supabase.from('bookings').select().order('start_date', { ascending: true }).gt('start_date', formatedDateNow)
+  const { data } = await supabase.from('bookings').select().order('start_date', { ascending: true }).gt('start_date', currentDate.value)
   bookings.value = data
 }
 
