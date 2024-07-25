@@ -38,9 +38,10 @@ async function addBooking() {
 <template>
   <div class="container px-4 pt-14 mx-auto">
     <div class="flex-1">
-      <div class="card">
-        <h2 class="text-lg font-bold mb-4">Ajouter une réservation</h2>
-        <form class="form-widget" @submit.prevent="addBooking">
+      <div class="p-6 border rounded-xl bg-white">
+        <HeadingH2 title="Ajouter une réservation" icon="Booking" />
+
+        <form class="form-widget mt-4" @submit.prevent="addBooking">
           <div>
             <label for="name" class="block mb-2">Qui ?</label>
             <input id="name" type="text" v-model="name"
@@ -61,9 +62,7 @@ async function addBooking() {
           </div>
 
           <div class="mt-8">
-            <input type="submit"
-              class="text-white bg-bodil-700 hover:bg-bodil-800 focus:ring-4 focus:outline-none focus:ring-bodil-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center mb-2"
-              :value="loading ? 'En attente ...' : 'Ajouter'" :disabled="loading" />
+            <input type="submit" class="button" :value="loading ? 'En attente ...' : 'Ajouter'" :disabled="loading" />
           </div>
         </form>
       </div>

@@ -8,14 +8,12 @@ const weatherIcon = "https://openweathermap.org/img/wn/" + rawData.weather[0].ic
 
 <template>
   <div class="mt-5 md:mt-0 md:ml-5 md:flex-1 min-w-60 md:max-w-60">
-    <h2 class="mb-6 md:flex items-center md:text-xl">
-      Météo
-    </h2>
+    <HeadingH2 title="Météo" icon="Weather" />
 
     <div class="w-full rounded-md border flex flex-col relative bg-white px-5">
       <div class="p-4 text-center">
         <div class="space-y-2">
-          <h2 class="font-bold">{{ rawData.name }}</h2>
+          <h3 class="font-bold">{{ rawData.name }}</h3>
           <img :src=weatherIcon alt="" width="100" height="100" class="w-15 h-15 mx-auto">
           <div class="capitalize">{{ rawData.weather[0].description }}</div>
           <div class="flex items-center justify-center">

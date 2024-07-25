@@ -15,16 +15,17 @@
   .card {
     @apply border border-bodil-200 bg-gradient-to-r from-bodil-50 to-bodil-200 rounded-md p-4 mb-2 flex-1;
   }
+
+  .button {
+    @apply text-white bg-bodil-700 transition-all hover:bg-bodil-800 focus:ring-4 focus:ring-bodil-300 font-medium rounded-md text-sm px-5 py-2.5 me-2 mb-2 dark:bg-bodil-600 dark:hover:bg-bodil-700 focus:outline-none dark:focus:ring-bodil-800 shadow-sm
+  }
 }
 
 body {
   font-family: 'Open Sans', sans-serif;
+  background-color: var(--bodil-50);
 }
 
 .font-custom {
   font-family: 'Dancing Script', serif;
-}
-
-.DefaultLayout {
-  background-color: var(--bodil-50);
 }
