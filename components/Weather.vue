@@ -12,7 +12,7 @@ const weatherIcon = "https://openweathermap.org/img/wn/" + rawData.weather[0].ic
       Météo
     </h2>
 
-    <div class="w-full rounded-md border border-bodil-500 flex flex-col relative bg-white px-5">
+    <div class="w-full rounded-md border flex flex-col relative bg-white px-5">
       <div class="p-4 text-center">
         <div class="space-y-2">
           <h2 class="font-bold">{{ rawData.name }}</h2>

@@ -57,12 +57,9 @@ onMounted(() => {
 
 <template>
   <div>
-    <h2 class="mb-6 md:flex items-center md:text-xl">
-      Prochaines réservations à la <span class="font-custom text-2xl text-bodil-800">&nbsp;Bodilière&nbsp;</span>
-    </h2>
+    <HeadingH2 title="Prochaines réservations" icon="Booking" />
 
-
-    <div v-if="bookings.length" class="grid grid-cols-3 md:grid-cols-4 font-bold px-4">
+    <div v-if="bookings.length" class="grid grid-cols-3 md:grid-cols-4 px-4">
       <div>Qui ?</div>
       <div class="ml-4">A partir du :</div>
       <div>Jusqu'au :</div>

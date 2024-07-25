@@ -31,15 +31,15 @@ onMounted(() => {
 
 <template>
   <div class="mt-16">
-    <h2 class="mb-6 md:flex items-center md:text-xl">
-      Les statistiques
-    </h2>
+    <HeadingH2 title="Les statistiques" icon="Graph" />
 
     <div v-if="bookings.length" class="">
-      Nombre de réservations totales : <span class="text-bodil-800 font-bold">{{ bookings.length }}</span> <br />
-      Nombre de jours totaux réservés : <span class="text-bodil-800 font-bold">{{ totalDays }}</span> <br />
-      Plus long séjour : <span class="text-bodil-800 font-bold">{{ longestStay }}</span> <br />
-      Meilleur bar de la ville : <span class="text-bodil-800 font-bold">Mieux Ici Qu'en Face</span> <br />
+      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        <StatisticsItem text="Nombre de réservations totale" :stat=bookings.length />
+        <StatisticsItem text="Nombre de jours totaux réservés" :stat=totalDays unit="jours" />
+        <StatisticsItem text="Plus long séjour" :stat=longestStay unit="jours" />
+        <StatisticsItem text="Meilleur bar de la ville" stat="Mieux Ici Qu'en Face" />
+      </div>
     </div>
   </div>
 
