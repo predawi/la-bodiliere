@@ -13,9 +13,10 @@ async function getBookings() {
   bookings.value = data
 
   data?.forEach(function (book) {
+    let bookItem = <any>book;
     // Get total amount of days booked
-    startDate = new Date(book.start_date.replace(' ', 'T') + 'Z')
-    endDate = new Date(book.end_date.replace(' ', 'T') + 'Z')
+    startDate = new Date(bookItem.start_date.replace(' ', 'T') + 'Z')
+    endDate = new Date(bookItem.end_date.replace(' ', 'T') + 'Z')
     diffDays = Math.round((endDate.valueOf() - startDate.valueOf()) / (1000 * 3600 * 24))
 
     // Set statistics
