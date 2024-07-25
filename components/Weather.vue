@@ -24,7 +24,7 @@ const weatherIcon = "https://openweathermap.org/img/wn/" + rawData.weather[0].ic
           <div class="flex items-center justify-center">
             <IconsTempFeel class="mr-2" /> Feel: {{ Math.round((rawData.main.feels_like - 273.15)) }}°c
           </div>
-          <div class="flex items-center justify-center text-blue-800">
+          <div class="flex items-center justify-center text-bodil-600">
             <IconsDrop class="mr-2" /> Humidity {{ rawData.main.humidity }}%
           </div>
         </div>
