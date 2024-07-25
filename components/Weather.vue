@@ -7,7 +7,7 @@ const weatherIcon = "https://openweathermap.org/img/wn/" + rawData.weather[0].ic
 </script>
 
 <template>
-  <div class="mt-5 md:mt-0 md:ml-5 md:flex-1 min-w-60 md:max-w-60">
+  <div class="mt-16 md:mt-0 md:ml-5 md:flex-1 min-w-60 md:max-w-60">
     <HeadingH2 title="Météo" icon="Weather" />
 
     <div class="w-full rounded-md border flex flex-col relative bg-white px-5">

@@ -36,7 +36,7 @@ async function addBooking() {
 </script>
 
 <template>
-  <div class="container px-4 pt-14 mx-auto">
+  <div class="container pt-14 pb-14 md:pb-0 mx-auto">
     <div class="flex-1">
       <div class="p-6 border rounded-xl bg-white">
         <HeadingH2 title="Ajouter une réservation" icon="Booking" />
