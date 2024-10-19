@@ -34,16 +34,12 @@ onMounted(() => {
   <div class="mt-16">
     <HeadingH2 title="Les statistiques" icon="Graph" />
 
-    <div v-if="bookings.length" class="">
-      <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        <StatisticsItem text="Nombre de réservations totale" :stat=bookings.length />
-        <StatisticsItem text="Nombre de jours totaux réservés" :stat=totalDays unit="jours" />
-        <StatisticsItem text="Plus long séjour" :stat=longestStay unit="jours" />
-        <StatisticsItem text="Meilleur bar de la ville" stat="Mieux Ici Qu'en Face" />
-      </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+      <StatisticsItem text="Nombre de réservations totale" :stat=bookings.length />
+      <StatisticsItem text="Nombre de jours totaux réservés" :stat=totalDays unit="jours" />
+      <StatisticsItem text="Plus long séjour" :stat=longestStay unit="jours" />
+      <StatisticsItem text="Meilleur bar de la ville" stat="MIQF" />
     </div>
   </div>
 
 </template>
-
-<style lang="scss"></style>

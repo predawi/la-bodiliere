@@ -2,7 +2,6 @@
 import { useDateFormat, useNow } from '@vueuse/core'
 
 const currentDate = useDateFormat(useNow(), 'YYYY-MM-DD')
-
 const supabase = useSupabaseClient()
 
 const bookings: any = ref([])
@@ -34,7 +33,7 @@ async function deleteBooking(e: Event) {
   if (!e.currentTarget) return
 
   const target = e.currentTarget as HTMLButtonElement;
-  let bookingID = target.getAttribute('booking')
+  let bookingID = Number(target.getAttribute('booking'))
 
   try {
     loading.value = true

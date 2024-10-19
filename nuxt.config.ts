@@ -4,7 +4,24 @@ export default defineNuxtConfig({
 
   css: ["~/assets/css/tailwind.scss"],
 
-  modules: ["@nuxtjs/google-fonts", "@nuxtjs/supabase", "@nuxt/image"],
+  modules: [
+    "@nuxtjs/google-fonts",
+    "@nuxtjs/supabase",
+    "@nuxt/image",
+    "nuxt-mail",
+  ],
+
+  runtimeConfig: {
+    mail: {
+      message: {
+        to: "bertout.benjamin@gmail.com",
+      },
+      smtp: {
+        host: "smtp.mailgun.com",
+        port: 587,
+      },
+    },
+  },
 
   googleFonts: {
     download: false,

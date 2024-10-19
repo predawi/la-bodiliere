@@ -14,6 +14,7 @@
     "@nuxt/image": "^1.7.0",
     "@nuxtjs/supabase": "^1.2.2",
     "nuxt": "^3.11.2",
+    "nuxt-mail": "^5.1.1",
     "vue": "^3.4.27",
     "vue-router": "^4.3.2"
   },

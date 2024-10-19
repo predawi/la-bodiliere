@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 // https://api.openweathermap.org/data/2.5/weather?lat=48.86&lon=2.33&appid=f73745784e795cd4021c77af6ee58498
 
 const { data, pending, error, refresh } = await useFetch('https://api.openweathermap.org/data/2.5/weather?lat=49.92&lon=1.07&appid=f73745784e795cd4021c77af6ee58498')
@@ -7,7 +7,7 @@ const weatherIcon = "https://openweathermap.org/img/wn/" + rawData.weather[0].ic
 </script>
 
 <template>
-  <div class="mt-16 md:mt-0 md:ml-5 md:flex-1 min-w-60 md:max-w-60">
+  <div class="mt-16 md:mt-0 min-w-60">
     <HeadingH2 title="Météo" icon="Weather" />
 
     <div class="w-full rounded-md border flex flex-col relative bg-white px-5">

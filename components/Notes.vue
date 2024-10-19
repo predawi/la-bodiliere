@@ -1,27 +1,33 @@
-<script setup>
+<script setup lang="ts">
 const supabase = useSupabaseClient()
-const notes = ref([])
+const notes: any = ref([])
 const loading = ref(false)
 const modalOpen = ref(false)
-let noteDeleteId = ref(false)
+let noteDeleteId: any = ref(false)
 
 async function getNotes() {
   const { data } = await supabase.from('notes').select().order('start_date', { ascending: true })
   notes.value = data
 }
 
-function formatDateFR(rawDate) {
+function formatDateFR(rawDate: Date) {
   let formatedDate = new Date(rawDate)
   return formatedDate.toLocaleDateString('fr-FR')
 }
 
-function openDeleteModal(e) {
+function openDeleteModal(e: Event) {
+  if (!e.currentTarget) return
   modalOpen.value = true
-  noteDeleteId = e.currentTarget.getAttribute('note')
+
+  const target = e.currentTarget as HTMLButtonElement;
+  noteDeleteId = target.getAttribute('note')
 }
 
-async function deleteBooking(e) {
-  let noteID = e.currentTarget.getAttribute('note')
+async function deleteBooking(e: Event) {
+  if (!e.currentTarget) return
+
+  const target = e.currentTarget as HTMLButtonElement;
+  let noteID = Number(target.getAttribute('note'))
 
   try {
     loading.value = true

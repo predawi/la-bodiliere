@@ -5,13 +5,13 @@
 <template>
   <div class="pt-14 pb-14 md:pb-0">
     <div class="container px-4 mx-auto">
-      <div class="md:flex md:flex-row">
-        <div class="flex-1">
+      <div class="md:grid md:grid-cols-12 md:gap-6">
+        <div class="md:col-span-9">
           <Bookings />
           <Statistics />
         </div>
 
-        <div>
+        <div class="md:col-span-3">
           <Weather />
         </div>
       </div>
