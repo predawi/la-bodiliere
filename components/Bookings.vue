@@ -11,7 +11,7 @@ let bookingDeleteId: any = ref([])
 
 async function getBookings() {
   // Get bookings list greater than now
-  const { data } = await supabase.from('bookings').select().order('start_date', { ascending: true }).gt('start_date', currentDate.value)
+  const { data } = await supabase.from('bookings').select().order('start_date', { ascending: true }).gt('end_date', currentDate.value)
   bookings.value = data
 }
 
