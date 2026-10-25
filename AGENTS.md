@@ -10,7 +10,7 @@ Site familial de réservation de la maison de La Bodilière (près de Dieppe). I
 - `@nuxt/image` pour les images, `nuxt-mail` (Mailgun) pour les e-mails.
 - Météo : API OpenWeather (Dieppe, lat 49.92, lon 1.07), appelée uniquement côté serveur par `server/api/weather.get.ts` (cache 10 min).
 - Déploiement sur Netlify. Gestionnaire de paquets : **yarn 1** (ne pas utiliser npm ni pnpm, ne pas créer d'autre lockfile).
-- Node **20** (`.nvmrc`) : `nvm use` avant toute commande. Vitest ne tourne pas sous Node 16.
+- Node **22** (`.nvmrc`, lu aussi par Netlify) : `nvm use` avant toute commande. Vitest ne tourne pas sous Node 16.
 
 ## Commandes
 
@@ -49,7 +49,7 @@ E-mails : `nuxt-mail` envoie via le SMTP Mailgun (`smtp.mailgun.org` par défaut
 ## Tests
 
 - Outils : **Vitest** 1.6 avec **@nuxt/test-utils** 3.12 (environnement `nuxt`), **@vue/test-utils** et **happy-dom**. Pas de Jest : il s'intègre mal à Nuxt 3. Config dans `vitest.config.ts`.
-- Les versions de `@nuxt/test-utils`, `@nuxt/kit` et `@nuxt/schema` sont fixées par `resolutions` dans `package.json` pour rester alignées sur Nuxt 3.11 : ne pas les monter sans monter Nuxt.
+- Les versions de `@nuxt/test-utils`, `@nuxt/kit` et `@nuxt/schema` sont fixées par `resolutions` dans `package.json` pour rester alignées sur Nuxt 3.11 : ne pas les monter sans monter Nuxt. `jiti` et `nuxi` y sont aussi fixés pour supprimer l'avertissement `DEP0180` de Node 22.
 - Emplacement : `tests/unit/`, en reprenant l'arborescence du code (`tests/unit/utils/dates.spec.ts`, `tests/unit/components/Bookings.spec.ts`).
 - Mettre la logique métier (calcul des nuits, chevauchement de séjours, statistiques, formatage des dates) dans des fonctions pures de `utils/`, testées sans monter de composant. `utils/dates.ts` contient déjà `parseDay`, `formatDateFR` et `countNights`.
 - Pour un composant : `mountSuspended` de `@nuxt/test-utils/runtime` ; simuler Supabase avec `mockNuxtImport('useSupabaseClient', ...)` (exemple : `tests/unit/components/Bookings.spec.ts`). La config de test donne au module Supabase une URL et une clé factices : aucun test ne touche la vraie base, l'API météo ou Mailgun.
