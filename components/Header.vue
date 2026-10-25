@@ -36,7 +36,7 @@ const onBookingPage = computed(() => route.path === "/signup");
     <NuxtLink
       v-else
       to="/signup"
-      class="button button-primary button-md w-full sm:w-auto"
+      class="button button-primary button-lg w-full sm:w-auto"
     >
       <AppIcon name="calendar" />
       Réserver la maison

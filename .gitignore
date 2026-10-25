@@ -25,3 +25,7 @@ logs
 
 # Local Netlify folder
 .netlify
+
+# Claude Code (local)
+.claude/launch.json
+.claude/settings.local.json
