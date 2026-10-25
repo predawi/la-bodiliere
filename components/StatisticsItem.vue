@@ -1,24 +1,12 @@
+<script setup lang="ts">
+defineProps<{ value: string | number, label: string, unit?: string }>()
+</script>
+
 <template>
-  <div class='flex flex-col items-center p-6 border rounded-xl bg-white text-center statistic-item'
-    :class="{ 'cls-loading': clsloading }">
-    <span class=" text-bodil-800 font-semibold text-xl">{{ stat }} {{ unit }}</span>
-    <span class="mt-2">{{ text }}</span>
+  <div class="card flex flex-col gap-1 px-4 py-4 md:px-6 md:py-5">
+    <span class="font-display text-[44px] leading-none text-sea-strong">
+      {{ value }}<small v-if="unit" class="ml-1.5 text-[22px]">{{ unit }}</small>
+    </span>
+    <span class="text-base text-ink-muted">{{ label }}</span>
   </div>
 </template>
-
-<script lang="ts">
-export default {
-  name: 'statistics-item',
-  props: ['text', 'stat', 'unit'],
-  data() {
-    return {
-      clsloading: true
-    }
-  },
-  mounted: function () {
-    setTimeout(() => {
-      this.clsloading = false
-    }, 500);
-  }
-}
-</script>

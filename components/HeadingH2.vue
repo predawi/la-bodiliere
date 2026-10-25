@@ -1,12 +1,10 @@
-<template>
-  <h2 class="mb-6 flex items-center text-xl md:text-2xl">
-    <SvgIcon :name=icon class="mr-2 text-bodil-600" />
-    {{ title }}
-  </h2>
-</template>
-
-<script lang="ts">
-export default {
-  props: ['title', 'icon'],
-}
+<script setup lang="ts">
+defineProps<{ title: string }>()
 </script>
+
+<template>
+  <div class="flex flex-col gap-2">
+    <h2 class="m-0 text-[28px] leading-tight md:text-[30px]">{{ title }}</h2>
+    <span class="wave w-20" aria-hidden="true" />
+  </div>
+</template>

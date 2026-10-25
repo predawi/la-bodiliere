@@ -12,13 +12,20 @@ export default defineNuxtConfig({
   ],
 
   runtimeConfig: {
+    openweatherApiKey: "",
+    // nuxt-mail copies these options at build time: NUXT_MAIL_* runtime overrides are ignored.
     mail: {
       message: {
         to: "bertout.benjamin@gmail.com",
+        from: process.env.MAILGUN_FROM,
       },
       smtp: {
-        host: "smtp.mailgun.com",
+        host: process.env.MAILGUN_SMTP_HOST || "smtp.mailgun.org",
         port: 587,
+        auth: {
+          user: process.env.MAILGUN_SMTP_USER,
+          pass: process.env.MAILGUN_SMTP_PASSWORD,
+        },
       },
     },
   },
@@ -26,12 +33,11 @@ export default defineNuxtConfig({
   googleFonts: {
     download: false,
     families: {
-      "Dancing Script": {
-        wght: "500",
+      "Instrument Serif": {
+        wght: [400],
       },
-      "Open Sans": {
-        wght: [400, 700],
-        ital: [400, 700],
+      "Atkinson Hyperlegible Next": {
+        wght: [400, 500, 600],
       },
     },
   },
@@ -66,7 +72,7 @@ export default defineNuxtConfig({
           content: "Site officiel de la Bodilière - Dieppe",
         },
         { name: "format-detection", content: "telephone=no" },
-        { name: "theme-color", content: "#96ac36" },
+        { name: "theme-color", content: "#f3f6f7" },
       ],
       link: [{ rel: "icon", type: "image/x-icon", href: "/favicon.ico" }],
     },

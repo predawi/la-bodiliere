@@ -1,41 +1,19 @@
 <script setup lang="ts">
-const supabase = useSupabaseClient()
-const bookings: any = ref([])
+import type { Booking } from '~/utils/bookings'
 
-let diffDays: number
-let longestStay: number = 0
-let totalDays = 0
+const props = defineProps<{ bookings: Booking[] }>()
 
-async function getBookings() {
-  const { data } = await supabase.from('bookings').select().order('start_date', { ascending: true })
-  bookings.value = data
-
-  data?.forEach(function (book) {
-    let bookItem = <any>book;
-    // Get total amount of days booked
-    diffDays = countNights(bookItem.start_date, bookItem.end_date)
-
-    // Set statistics
-    longestStay = diffDays > longestStay ? diffDays : longestStay
-    totalDays += diffDays
-  })
-}
-
-onMounted(() => {
-  getBookings()
-})
+const stats = computed(() => bookingStats(props.bookings))
 </script>
 
 <template>
-  <div class="mt-16">
-    <HeadingH2 title="Les statistiques" icon="Graph" />
-
-    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-      <StatisticsItem text="Nombre de réservations totale" :stat=bookings.length />
-      <StatisticsItem text="Nombre de jours totaux réservés" :stat=totalDays unit="jours" />
-      <StatisticsItem text="Plus long séjour" :stat=longestStay unit="jours" />
-      <StatisticsItem text="Meilleur bar de la ville" stat="MIQF" />
+  <section class="flex flex-col gap-4">
+    <HeadingH2 title="La maison en chiffres" />
+    <div class="grid grid-cols-2 gap-3">
+      <StatisticsItem :value="stats.count" label="séjours depuis le début" />
+      <StatisticsItem :value="stats.totalNights" unit="nuits" label="passées à la maison" />
+      <StatisticsItem :value="stats.longestStay" unit="nuits" label="le plus long séjour" />
+      <StatisticsItem value="MIQF" label="meilleur bar de la ville" />
     </div>
-  </div>
-
+  </section>
 </template>

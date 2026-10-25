@@ -1,116 +1,246 @@
 <script setup lang="ts">
-import { useDateFormat, useNow } from '@vueuse/core'
+import type { NewBooking } from "~/utils/bookings";
 
-const currentDate = useDateFormat(useNow(), 'YYYY-MM-DD')
+const today = useToday();
+const { bookings, addBooking } = useBookings();
+const mail = useMail();
 
-const supabase = useSupabaseClient()
-const loading = ref(false)
-const success = ref(false)
+const name = ref("");
+const startDate = ref("");
+const endDate = ref("");
+const saving = ref(false);
+const saveFailed = ref(false);
+const saved = ref<NewBooking | null>(null);
 
-const name = ref('')
-const start_date = ref('')
-const end_date = ref('')
+const upcoming = computed(() => upcomingBookings(bookings.value, today.value));
+const check = computed(() =>
+  checkStay(bookings.value, today.value, startDate.value, endDate.value),
+);
+const canSave = computed(
+  () =>
+    Boolean(name.value.trim()) && check.value.state === "free" && !saving.value,
+);
 
-const mail = useMail()
+async function save() {
+  if (!canSave.value) return;
+  const booking: NewBooking = {
+    name: name.value.trim(),
+    start_date: startDate.value,
+    end_date: endDate.value,
+  };
 
-async function addBooking() {
+  saving.value = true;
+  saveFailed.value = false;
   try {
-    loading.value = true
-
-    const insert = {
-      name: name.value,
-      start_date: start_date.value,
-      end_date: end_date.value,
-    }
-
-    const { error } = await supabase.from('bookings').insert(insert, {
-      returning: 'minimal', // Don't return the value after inserting
-    })
-    if (error) throw error
-    success.value = true
-
-    mail.send({
-      from: 'John Doe',
-      subject: 'Incredible',
-      text: 'This is an incredible test message',
-    })
-
-  } catch (error) {
-    console.error(error.message)
+    await addBooking(booking);
+    saved.value = booking;
+    notifyFamily(booking);
+  } catch {
+    saveFailed.value = true;
   } finally {
-    loading.value = false
+    saving.value = false;
   }
 }
 
+function notifyFamily(booking: NewBooking) {
+  mail
+    .send(bookingEmail(booking))
+    .catch((error) => console.warn("Booking e-mail not sent", error));
+}
+
+function bookAgain() {
+  saved.value = null;
+  name.value = "";
+  startDate.value = "";
+  endDate.value = "";
+}
 </script>
 
 <template>
-  <div class="pt-14 pb-14 md:pb-0">
-    <div class="container px-4 mx-auto">
-      <div class="flex-1">
-        <div class="p-6 border rounded-xl bg-white">
-          <HeadingH2 title="Ajouter une réservation" icon="Booking" />
+  <div v-if="saved" class="mx-auto flex max-w-[560px] flex-col gap-7 pt-6">
+    <section class="flex flex-col items-center gap-4 text-center" role="status">
+      <span
+        class="flex size-[88px] items-center justify-center rounded-full bg-algue-tint text-algue"
+      >
+        <AppIcon name="check" :size="48" />
+      </span>
+      <h1 class="m-0 text-[40px] leading-[1.1]">C'est réservé !</h1>
+      <p class="m-0 max-w-[30ch] text-[19px]">
+        Toute la famille voit maintenant ce séjour sur l'accueil.
+      </p>
+      <span class="wave w-20" aria-hidden="true" />
+    </section>
 
-          <form class="form-widget mt-4" @submit.prevent="addBooking">
-            <div>
-              <label for="name" class="block mb-2">Qui ?</label>
-              <input id="name" type="text" v-model="name"
-                class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-bodil-500 focus:border-bodil-500 block w-full p-2.5"
-                required />
-            </div>
-            <div>
-              <label for="start_date" class="block mb-2">De quand ?</label>
-              <input id="start_date" type="date" v-model="start_date" :min=currentDate
-                class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-bodil-500 focus:border-bodil-500 block w-full p-2.5"
-                required />
-            </div>
-            <div>
-              <label for="end_date" class="block mb-2">A quand ?</label>
-              <input id="end_date" type="date" v-model="end_date" :min=currentDate
-                class="mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-bodil-500 focus:border-bodil-500 block w-full p-2.5"
-                required />
-            </div>
+    <StayCard :booking="{ id: 0, ...saved }" highlighted readonly />
 
-            <div class="mt-8">
-              <input type="submit" class="button" :value="loading ? 'En attente ...' : 'Ajouter'" :disabled="loading" />
-            </div>
-          </form>
+    <div class="flex flex-col gap-3 sm:flex-row">
+      <NuxtLink to="/" class="button button-primary button-lg w-full sm:w-auto"
+        >Retour à l'accueil</NuxtLink
+      >
+      <button
+        type="button"
+        class="button button-secondary w-full sm:w-auto"
+        @click="bookAgain"
+      >
+        Réserver d'autres dates
+      </button>
+    </div>
+  </div>
+
+  <div v-else class="flex flex-col gap-8">
+    <div class="flex flex-col gap-2">
+      <h1 class="m-0 text-[38px] leading-[1.1] md:text-5xl">
+        Réserver la maison
+      </h1>
+      <span class="wave w-20" aria-hidden="true" />
+      <p class="m-0 mt-2 max-w-[60ch] text-lg text-ink-muted md:text-xl">
+        Indiquez qui vient et à quelles dates.
+      </p>
+    </div>
+
+    <div class="flex flex-wrap items-start gap-10">
+      <form
+        class="card flex min-w-0 flex-[1_1_440px] flex-col gap-6 p-5 md:p-8"
+        novalidate
+        @submit.prevent="save"
+      >
+        <div class="flex flex-col gap-2">
+          <label for="name" class="font-medium">Qui vient ?</label>
+          <input
+            id="name"
+            v-model="name"
+            type="text"
+            autocomplete="off"
+            class="field"
+            aria-describedby="name-hint"
+          />
         </div>
 
-        <!-- MODAL SUCCESS -->
-        <div :class="success ? 'relative z-10' : 'relative z-10 hidden'" aria-labelledby="modal-semi"
-          id="modalAddBooking" role="dialog" aria-modal="true">
-          <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
-
-          <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
-            <div class="flex min-h-full items-end justify-center p-4 text-center items-center sm:p-0">
-              <div
-                class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
-                <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
-                  <div class="sm:flex sm:items-center">
-                    <div
-                      class="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" aria-hidden="true" class="-6 w-6 text-green-700">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"></path>
-                      </svg>
-                    </div>
-                    <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                      <h3 class="text-base font-semibold leading-6 text-gray-900" id="modal-semi">Créneau réservé !</h3>
-                    </div>
-                  </div>
-                </div>
-                <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
-                  <button type="button"
-                    class="inline-flex w-full justify-center rounded-md bg-bodil-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-bodil-500 sm:ml-3 sm:w-auto"
-                    @click.prevent="success = false">Fermer</button>
-                </div>
-              </div>
-            </div>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div class="flex flex-col gap-2">
+            <label for="start_date" class="font-medium">Date d'arrivée</label>
+            <input
+              id="start_date"
+              v-model="startDate"
+              type="date"
+              :min="today"
+              class="field"
+              :aria-invalid="check.state === 'past'"
+              :aria-describedby="
+                check.state === 'past' ? 'start-date-error' : undefined
+              "
+            />
+          </div>
+          <div class="flex flex-col gap-2">
+            <label for="end_date" class="font-medium">Date de départ</label>
+            <input
+              id="end_date"
+              v-model="endDate"
+              type="date"
+              :min="startDate || today"
+              class="field"
+              :aria-invalid="check.state === 'order'"
+              :aria-describedby="
+                check.state === 'order' ? 'end-date-error' : undefined
+              "
+            />
           </div>
         </div>
 
-      </div>
+        <p
+          v-if="check.state === 'past'"
+          id="start-date-error"
+          class="m-0 flex items-center gap-1.5 font-medium text-bouee"
+        >
+          <AppIcon name="alert" />
+          Choisis une date d'arrivée à partir d'aujourd'hui.
+        </p>
+
+        <p
+          v-else-if="check.state === 'order'"
+          id="end-date-error"
+          class="m-0 flex items-center gap-1.5 font-medium text-bouee"
+        >
+          <AppIcon name="alert" />
+          Choisis une date de départ après la date d'arrivée.
+        </p>
+
+        <div
+          v-else-if="check.state === 'overlap'"
+          role="alert"
+          class="flex gap-3 rounded-field bg-bouee-tint p-4"
+        >
+          <AppIcon name="alert" :size="24" class="mt-0.5 text-bouee" />
+          <div>
+            <strong class="block font-semibold text-bouee"
+              >La maison est déjà prise : {{ check.booking.name }},
+              {{
+                formatStayRange(
+                  check.booking.start_date,
+                  check.booking.end_date,
+                  false,
+                )
+              }}.</strong
+            >
+            Choisis d'autres dates.
+          </div>
+        </div>
+
+        <div
+          v-else-if="check.state === 'free'"
+          role="status"
+          class="flex gap-3 rounded-field bg-algue-tint p-4"
+        >
+          <AppIcon name="check-circle" :size="24" class="mt-0.5 text-algue" />
+          <div>
+            <strong class="block font-semibold text-algue"
+              >La maison est libre.</strong
+            >
+            {{ formatStayRange(startDate, endDate) }},
+            {{ formatNights(check.nights) }}.
+          </div>
+        </div>
+
+        <p
+          v-if="saveFailed"
+          role="alert"
+          class="m-0 flex gap-3 rounded-field bg-bouee-tint p-4 text-bouee"
+        >
+          <AppIcon name="alert" :size="24" />
+          La réservation n'a pas pu être enregistrée. Réessaie dans un instant.
+        </p>
+
+        <button
+          type="submit"
+          class="button button-primary button-lg w-full sm:w-auto sm:self-start"
+          :disabled="!canSave"
+        >
+          {{ saving ? "Enregistrement…" : "Enregistrer la réservation" }}
+        </button>
+      </form>
+
+      <aside
+        class="card flex min-w-0 flex-[1_1_360px] flex-col gap-4 p-5 md:p-6"
+      >
+        <h2 class="m-0 text-[28px] leading-tight">Déjà réservé</h2>
+        <p v-if="!upcoming.length" class="m-0 text-ink-muted">
+          Rien pour le moment : toutes les dates sont libres.
+        </p>
+        <ul v-else class="m-0 flex list-none flex-col p-0">
+          <li
+            v-for="booking in upcoming"
+            :key="booking.id"
+            class="flex flex-col gap-0.5 border-b border-galet py-3 first:pt-0 last:border-0 last:pb-0"
+          >
+            <span class="font-display text-[28px] leading-tight">{{
+              booking.name
+            }}</span>
+            <span>{{
+              formatStayRange(booking.start_date, booking.end_date)
+            }}</span>
+          </li>
+        </ul>
+      </aside>
     </div>
   </div>
 </template>

@@ -8,7 +8,7 @@ Site familial de réservation de la maison de La Bodilière (près de Dieppe). I
 - Tailwind CSS 3 et SCSS (`assets/css/tailwind.scss`), polices via `@nuxtjs/google-fonts`.
 - Supabase via `@nuxtjs/supabase` (`useSupabaseClient()`), sans authentification (`redirect: false`).
 - `@nuxt/image` pour les images, `nuxt-mail` (Mailgun) pour les e-mails.
-- Météo : API OpenWeather (Dieppe, lat 49.92, lon 1.07).
+- Météo : API OpenWeather (Dieppe, lat 49.92, lon 1.07), appelée uniquement côté serveur par `server/api/weather.get.ts` (cache 10 min).
 - Déploiement sur Netlify. Gestionnaire de paquets : **yarn 1** (ne pas utiliser npm ni pnpm, ne pas créer d'autre lockfile).
 - Node **20** (`.nvmrc`) : `nvm use` avant toute commande. Vitest ne tourne pas sous Node 16.
 
@@ -24,15 +24,19 @@ yarn test:watch
 ## Structure
 
 - `pages/` : `index.vue` (accueil), `signup.vue` (formulaire de réservation).
-- `components/` : `Header`, `Bookings`, `Statistics`, `StatisticsItem`, `Weather`, `HeadingH2`, `SvgIcon` (charge `components/Icons/*.vue` par nom), `Notes` (non utilisé pour l'instant).
-- `layouts/default.vue`, `app.vue` (transitions de page).
+- `components/` : `Header`, `HomeHero` (bandeau d'état), `Bookings` (liste des séjours et confirmation de suppression), `StayCard`, `ConfirmDialog`, `AvailabilityCalendar`, `Weather`, `Statistics`, `StatisticsItem`, `HeadingH2` (titre de section avec vague), `AppIcon` (icônes SVG par nom), `Notes` (non utilisé pour l'instant).
+- `composables/` : `useBookings` (lecture, ajout, suppression via Supabase, état partagé) et `useToday` (jour courant à Paris, partagé serveur/client).
+- `utils/` : `dates.ts` (calcul et formatage des dates en français) et `bookings.ts` (type `Booking`, chevauchements, état de la maison, statistiques, validation d'un séjour).
+- `layouts/default.vue` (en-tête et largeur du contenu), `assets/css/tailwind.scss` (tokens de couleur, thème Nuit, classes `.card`, `.button-*`, `.field`, `.wave`).
 - `public/vache.png` : le logo. Il ne se redessine pas, ne se recolore pas et ne se recadre pas.
 
 Données Supabase :
 - `bookings` : `id`, `name`, `start_date`, `end_date`. Une nuit est occupée du jour d'arrivée jusqu'à la veille du départ.
 - `notes` : `id`, `content`, `start_date`.
 
-Variables d'environnement (`.env`, jamais commité) : `SUPABASE_URL`, `SUPABASE_KEY`, `MAILGUN_DOMAIN`, `MAILGUN_API_KEY`.
+Variables d'environnement (`.env` en local, réglages Netlify en production, jamais commitées) : `SUPABASE_URL`, `SUPABASE_KEY`, `NUXT_OPENWEATHER_API_KEY`, `MAILGUN_SMTP_USER`, `MAILGUN_SMTP_PASSWORD`, `MAILGUN_FROM`, `MAILGUN_SMTP_HOST` (facultatif).
+
+E-mails : `nuxt-mail` envoie via le SMTP Mailgun (`smtp.mailgun.org` par défaut, `MAILGUN_SMTP_HOST=smtp.eu.mailgun.org` pour un domaine de la région EU). Ses options sont figées au build : les variables `MAILGUN_*` doivent exister au moment de `yarn build` (Netlify les fournit), et un changement de `.env` demande de relancer `yarn dev`. Le destinataire et l'expéditeur sont fixés côté serveur dans `nuxt.config.ts` ; le client n'envoie que l'objet et le texte (`bookingEmail` dans `utils/bookings.ts`).
 
 ## Démarche pour chaque développement
 
@@ -86,10 +90,9 @@ Le redesign suit le design system « La Bodilière » : https://claude.ai/artifa
 ## Dette connue
 
 À corriger quand on touche le fichier concerné :
-- `components/Weather.vue` : clé OpenWeather en dur dans l'URL, lecture de `data._rawValue`, libellés en anglais. Si l'appel météo échoue côté serveur, toute la page d'accueil tombe en erreur 500.
-- `pages/signup.vue` : e-mail de test (« John Doe », « Incredible ») envoyé à chaque réservation.
-- `components/Statistics.vue` : statistiques calculées dans des variables non réactives et typées `any`.
-- `Notes.vue` n'est utilisé nulle part et sa fonction de suppression s'appelle `deleteBooking`.
+- `Notes.vue` n'est utilisé nulle part, utilise encore les anciennes couleurs `bodil-*` et sa fonction de suppression s'appelle `deleteBooking`.
+- `useToday` fixe le jour au chargement : un onglet resté ouvert après minuit garde la veille jusqu'au rechargement.
+- La route `/mail/send` de nuxt-mail est publique : n'importe qui peut envoyer un message au destinataire configuré.
 
 ## Git
 
