@@ -2,8 +2,6 @@
 const supabase = useSupabaseClient()
 const bookings: any = ref([])
 
-let startDate: Date
-let endDate: Date
 let diffDays: number
 let longestStay: number = 0
 let totalDays = 0
@@ -15,9 +13,7 @@ async function getBookings() {
   data?.forEach(function (book) {
     let bookItem = <any>book;
     // Get total amount of days booked
-    startDate = new Date(bookItem.start_date.replace(' ', 'T') + 'Z')
-    endDate = new Date(bookItem.end_date.replace(' ', 'T') + 'Z')
-    diffDays = Math.round((endDate.valueOf() - startDate.valueOf()) / (1000 * 3600 * 24))
+    diffDays = countNights(bookItem.start_date, bookItem.end_date)
 
     // Set statistics
     longestStay = diffDays > longestStay ? diffDays : longestStay

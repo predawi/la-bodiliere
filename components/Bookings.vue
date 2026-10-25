@@ -15,11 +15,6 @@ async function getBookings() {
   bookings.value = data
 }
 
-function formatDateFR(rawDate: Date) {
-  let formatedDate = new Date(rawDate)
-  return formatedDate.toLocaleDateString('fr-FR')
-}
-
 function openDeleteModal(e: Event) {
   if (!e.currentTarget) return
 
