@@ -4,7 +4,7 @@ Site familial de réservation de la maison de La Bodilière (près de Dieppe). I
 
 ## Stack
 
-- Nuxt 3 (3.11) et Vue 3, TypeScript, auto-imports Nuxt (composants, composables, `utils/`).
+- Nuxt 4 et Vue 3, TypeScript, auto-imports Nuxt (composants, composables, `utils/`).
 - Tailwind CSS 3 et SCSS (`assets/css/tailwind.scss`), polices via `@nuxtjs/google-fonts`.
 - Supabase via `@nuxtjs/supabase` (`useSupabaseClient()`), sans authentification (`redirect: false`).
 - `@nuxt/image` pour les images, `nuxt-mail` (Mailgun) pour les e-mails.
@@ -26,6 +26,8 @@ yarn test:watch
 ```
 
 ## Structure
+
+Le code est à la racine et non dans `app/` : Nuxt 4 garde cette organisation quand le dossier `app/` n'existe pas.
 
 - `pages/` : `index.vue` (accueil), `signup.vue` (formulaire de réservation).
 - `components/` : `Header`, `HomeHero` (bandeau d'état), `Bookings` (liste des séjours et confirmation de suppression), `StayCard`, `ConfirmDialog`, `AvailabilityCalendar`, `Weather`, `Statistics`, `StatisticsItem`, `HeadingH2` (titre de section avec vague), `AppIcon` (icônes SVG par nom).
@@ -55,8 +57,7 @@ E-mails : `nuxt-mail` envoie via le SMTP Mailgun (`smtp.mailgun.org` par défaut
 
 ## Tests
 
-- Outils : **Vitest** 1.6 avec **@nuxt/test-utils** 3.12 (environnement `nuxt`), **@vue/test-utils** et **happy-dom**. Pas de Jest : il s'intègre mal à Nuxt 3. Config dans `vitest.config.ts`.
-- Les versions de `@nuxt/test-utils`, `@nuxt/kit` et `@nuxt/schema` sont fixées par `resolutions` dans `package.json` pour rester alignées sur Nuxt 3.11 : ne pas les monter sans monter Nuxt. `jiti` et `nuxi` y sont aussi fixés pour supprimer l'avertissement `DEP0180` de Node 22.
+- Outils : **Vitest** 4 avec **@nuxt/test-utils** 4 (environnement `nuxt`), **@vue/test-utils** et **happy-dom**. Pas de Jest : il s'intègre mal à Nuxt. Config dans `vitest.config.ts`.
 - Emplacement : `tests/unit/`, en reprenant l'arborescence du code (`tests/unit/utils/dates.spec.ts`, `tests/unit/components/Bookings.spec.ts`).
 - Mettre la logique métier (calcul des nuits, chevauchement de séjours, statistiques, formatage des dates) dans des fonctions pures de `utils/`, testées sans monter de composant. `utils/dates.ts` contient déjà `parseDay`, `formatDateFR` et `countNights`.
 - Pour un composant : `mountSuspended` de `@nuxt/test-utils/runtime` ; simuler Supabase avec `mockNuxtImport('useSupabaseClient', ...)` (exemple : `tests/unit/components/Bookings.spec.ts`). La config de test donne au module Supabase une URL et une clé factices : aucun test ne touche la vraie base, l'API météo ou Mailgun.

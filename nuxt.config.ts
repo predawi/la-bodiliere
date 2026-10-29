@@ -13,7 +13,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     openweatherApiKey: "",
-    // nuxt-mail copies these options at build time: NUXT_MAIL_* runtime overrides are ignored.
+    // process.env is read at build time: MAILGUN_* must be set when running yarn build.
     mail: {
       message: {
         to: "bertout.benjamin@gmail.com",
@@ -44,6 +44,7 @@ export default defineNuxtConfig({
 
   supabase: {
     redirect: false,
+    types: false,
   },
 
   image: {
