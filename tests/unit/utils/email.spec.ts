@@ -39,7 +39,7 @@ describe('bookingEmail', () => {
   it('links to the site and its logo with absolute URLs', () => {
     expect(email.html).toContain('href="https://labodiliere.netlify.app"')
     expect(email.html).toContain('src="https://labodiliere.netlify.app/email-logo.png"')
-    expect(email.html).toContain('>labodiliere.netlify.app<')
+    expect(email.html).not.toContain('>labodiliere.netlify.app<')
   })
 
   it('offers to add the stay to a personal calendar', () => {

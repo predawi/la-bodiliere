@@ -39,7 +39,6 @@ export function bookingEmail(booking: NewBooking, siteUrl: string) {
   const arrival = capitalize(formatLongDate(booking.start_date, true))
   const departure = capitalize(formatLongDate(booking.end_date, true))
   const site = siteUrl.replace(/\/$/, '')
-  const siteLabel = site.replace(/^https?:\/\//, '')
   const googleUrl = googleCalendarUrl(booking, site)
   const icsUrl = icsFileUrl(booking, site)
 
@@ -112,7 +111,6 @@ ${detailRow('Durée', nights, true)}
 <a href="${site}" style="display:inline-block;padding:16px 30px;font-family:${SANS};font-size:18px;font-weight:500;line-height:1.2;color:#ffffff;text-decoration:none;">Voir les séjours sur le site</a>
 </td>
 </tr></table>
-<p style="margin:12px 0 0;font-family:${SANS};font-size:15px;color:#50656e;">${siteLabel}</p>
 <p style="margin:28px 0 12px;font-family:${SANS};font-size:16px;font-weight:500;color:#0f2a35;">Ajouter à mon agenda</p>
 <table role="presentation" cellpadding="0" cellspacing="0">
 ${calendarButton('Google Agenda', googleUrl)}
