@@ -15,7 +15,11 @@ Site familial de réservation de la maison de La Bodilière (près de Dieppe). I
 ## Commandes
 
 ```bash
-yarn dev          # http://localhost:3000
+yarn db:start     # base Supabase locale (Docker), à lancer avant yarn dev
+yarn dev          # http://localhost:3000, sur la base locale
+yarn dev:prod     # sur la base de prod (.env)
+yarn db:reset     # remet la base locale à zéro (migrations + seed)
+yarn db:stop
 yarn build
 yarn test         # Vitest, une passe
 yarn test:watch
@@ -33,7 +37,9 @@ yarn test:watch
 Données Supabase :
 
 - `bookings` : `id`, `name`, `start_date`, `end_date`. Une nuit est occupée du jour d'arrivée jusqu'à la veille du départ.
-- `notes` : `id`, `content`, `start_date`.
+- `notes` : `id`, `note`, `author` (plus utilisée par le site).
+
+Base locale : CLI Supabase (`brew install supabase/tap/supabase`) et Docker. Le schéma est dans `supabase/migrations/`, les séjours de test dans `supabase/seed.sql` (dates relatives au jour du reset). `yarn dev` remplace `SUPABASE_URL` et `SUPABASE_KEY` du `.env` par l'URL locale et la clé `anon` de démo du CLI, la même sur toutes les machines. Studio : http://127.0.0.1:54323. Un changement de schéma passe par `supabase migration new <nom>`, se teste en local puis s'applique à la prod avec `supabase db push` (projet `avpzcqjfdludlryulhfz`, sans historique de migrations avant celle-ci : voir `supabase migration repair`).
 
 Variables d'environnement (`.env` en local, réglages Netlify en production, jamais commitées) : `SUPABASE_URL`, `SUPABASE_KEY`, `NUXT_OPENWEATHER_API_KEY`, `MAILGUN_SMTP_USER`, `MAILGUN_SMTP_PASSWORD`, `MAILGUN_FROM`, `MAILGUN_SMTP_HOST` (facultatif).
 
