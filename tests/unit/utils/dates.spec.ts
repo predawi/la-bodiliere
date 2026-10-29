@@ -7,6 +7,7 @@ import {
   formatMonth,
   formatNights,
   formatStayRange,
+  formatTime,
   monthGrid,
   parisDay,
   parseDay,
@@ -112,5 +113,16 @@ describe('monthGrid', () => {
 
   it('is labelled in French', () => {
     expect(formatMonth(2026, 9)).toBe('octobre 2026')
+  })
+})
+
+describe('formatTime', () => {
+  it('gives the time in Paris, summer and winter', () => {
+    expect(formatTime(new Date('2026-07-01T06:05:00Z'))).toBe('8h05')
+    expect(formatTime(new Date('2026-12-01T16:30:00Z'))).toBe('17h30')
+  })
+
+  it('writes midnight as 0 h', () => {
+    expect(formatTime(new Date('2026-12-01T23:10:00Z'))).toBe('0h10')
   })
 })

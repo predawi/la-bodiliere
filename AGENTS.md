@@ -9,6 +9,7 @@ Site familial de réservation de la maison de La Bodilière (près de Dieppe). I
 - Supabase via `@nuxtjs/supabase` (`useSupabaseClient()`), sans authentification (`redirect: false`).
 - `@nuxt/image` pour les images, `nuxt-mail` (Mailgun) pour les e-mails.
 - Météo : API OpenWeather (Dieppe, lat 49.92, lon 1.07), appelée uniquement côté serveur par `server/api/weather.get.ts` (cache 10 min).
+- Marées : API api-maree.fr (site `dieppe`), appelée côté serveur par `server/api/tides.get.ts` (cache 1 h, heures demandées en UTC). Le pont Colbert est levé de 2 h avant à 45 min après chaque pleine mer (`utils/bridge.ts`).
 - Déploiement sur Netlify. Gestionnaire de paquets : **yarn 1** (ne pas utiliser npm ni pnpm, ne pas créer d'autre lockfile).
 - Node **22** (`.nvmrc`, lu aussi par Netlify) : `nvm use` avant toute commande. Vitest ne tourne pas sous Node 16.
 
@@ -30,9 +31,9 @@ yarn test:watch
 Le code est à la racine et non dans `app/` : Nuxt 4 garde cette organisation quand le dossier `app/` n'existe pas.
 
 - `pages/` : `index.vue` (accueil), `signup.vue` (formulaire de réservation).
-- `components/` : `Header`, `HomeHero` (bandeau d'état), `Bookings` (liste des séjours et confirmation de suppression), `StayCard`, `ConfirmDialog`, `AvailabilityCalendar`, `Weather`, `Statistics`, `StatisticsItem`, `HeadingH2` (titre de section avec vague), `AppIcon` (icônes SVG par nom).
+- `components/` : `Header`, `HomeHero` (bandeau d'état), `ColbertBridge` (pont Colbert levé ou baissé selon la marée), `Bookings` (liste des séjours et confirmation de suppression), `StayCard`, `ConfirmDialog`, `AvailabilityCalendar`, `Weather`, `Statistics`, `StatisticsItem`, `HeadingH2` (titre de section avec vague), `AppIcon` (icônes SVG par nom).
 - `composables/` : `useBookings` (lecture, ajout, suppression via Supabase, état partagé) et `useToday` (jour courant à Paris, partagé serveur/client).
-- `utils/` : `dates.ts` (calcul et formatage des dates en français) et `bookings.ts` (type `Booking`, chevauchements, état de la maison, statistiques, validation d'un séjour).
+- `utils/` : `dates.ts` (calcul et formatage des dates et heures en français), `bridge.ts` (ouvertures du pont Colbert) et `bookings.ts` (type `Booking`, chevauchements, état de la maison, statistiques, validation d'un séjour).
 - `layouts/default.vue` (en-tête et largeur du contenu), `assets/css/tailwind.scss` (tokens de couleur, thème Nuit, classes `.card`, `.button-*`, `.field`, `.wave`).
 - `public/vache.png` : le logo. Il ne se redessine pas, ne se recolore pas et ne se recadre pas.
 
@@ -43,7 +44,7 @@ Données Supabase :
 
 Base locale : CLI Supabase (`brew install supabase/tap/supabase`) et Docker. Le schéma est dans `supabase/migrations/`, les séjours de test dans `supabase/seed.sql` (dates relatives au jour du reset). `yarn dev` remplace `SUPABASE_URL` et `SUPABASE_KEY` du `.env` par l'URL locale et la clé `anon` de démo du CLI, la même sur toutes les machines. Studio : http://127.0.0.1:54323. Un changement de schéma passe par `supabase migration new <nom>`, se teste en local puis s'applique à la prod avec `supabase db push` (projet `avpzcqjfdludlryulhfz`, sans historique de migrations avant celle-ci : voir `supabase migration repair`).
 
-Variables d'environnement (`.env` en local, réglages Netlify en production, jamais commitées) : `SUPABASE_URL`, `SUPABASE_KEY`, `NUXT_OPENWEATHER_API_KEY`, `MAILGUN_SMTP_USER`, `MAILGUN_SMTP_PASSWORD`, `MAILGUN_FROM`, `MAILGUN_SMTP_HOST` (facultatif).
+Variables d'environnement (`.env` en local, réglages Netlify en production, jamais commitées) : `SUPABASE_URL`, `SUPABASE_KEY`, `NUXT_OPENWEATHER_API_KEY`, `NUXT_API_MAREE_KEY`, `MAILGUN_SMTP_USER`, `MAILGUN_SMTP_PASSWORD`, `MAILGUN_FROM`, `MAILGUN_SMTP_HOST` (facultatif).
 
 E-mails : `nuxt-mail` envoie via le SMTP Mailgun (`smtp.mailgun.org` par défaut, `MAILGUN_SMTP_HOST=smtp.eu.mailgun.org` pour un domaine de la région EU). Ses options sont figées au build : les variables `MAILGUN_*` doivent exister au moment de `yarn build` (Netlify les fournit), et un changement de `.env` demande de relancer `yarn dev`. Le destinataire et l'expéditeur sont fixés côté serveur dans `nuxt.config.ts` ; le client n'envoie que l'objet, le texte et le HTML (`bookingEmail` dans `utils/email.ts`). Le HTML des e-mails n'utilise que des tableaux, des styles en ligne, des couleurs en hexadécimal et des polices de secours (Georgia, Arial) : pas de flexbox, de variables CSS ni de SVG. Seule exception : une media query dans `<style>` pour adapter la mise en page au téléphone, en amélioration facultative (le mail doit rester lisible si elle est ignorée). Toute donnée saisie par un utilisateur passe par `escapeHtml`. Les images sont en URL absolue (`public/email-logo.png`). Maquette : artboard « E-mail · confirmation de réservation » du canvas.
 
@@ -95,7 +96,7 @@ Le redesign suit le design system « La Bodilière » : https://claude.ai/artifa
 
 ## Sécurité
 
-- Aucune clé ou secret dans le code : passer par `.env` et `runtimeConfig`. Les appels qui demandent une clé privée (OpenWeather, Mailgun) passent par une route serveur dans `server/api/`.
+- Aucune clé ou secret dans le code : passer par `.env` et `runtimeConfig`. Les appels qui demandent une clé privée (OpenWeather, api-maree, Mailgun) passent par une route serveur dans `server/api/`.
 
 ## Dette connue
 

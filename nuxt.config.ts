@@ -13,6 +13,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     openweatherApiKey: "",
+    apiMareeKey: "",
     // process.env is read at build time: MAILGUN_* must be set when running yarn build.
     mail: {
       message: {

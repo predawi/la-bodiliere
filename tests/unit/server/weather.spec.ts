@@ -25,7 +25,7 @@ describe('toWeather', () => {
   })
 
   it('gives the sunset in Paris time', () => {
-    expect(toWeather(response).sunset).toBe('17 h 22')
+    expect(toWeather(response).sunset).toBe('17h22')
   })
 
   it('maps the OpenWeather icon to a simple one', () => {

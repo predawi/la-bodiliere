@@ -17,6 +17,12 @@ export function parisDay(date: Date): string {
   return new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Paris' }).format(date)
 }
 
+export function formatTime(date: Date): string {
+  const parts = new Intl.DateTimeFormat('fr-FR', { timeZone: 'Europe/Paris', hour: 'numeric', minute: '2-digit', hourCycle: 'h23' }).formatToParts(date)
+  const part = (type: 'hour' | 'minute') => parts.find(p => p.type === type)?.value
+  return `${Number(part('hour'))}h${part('minute')}`
+}
+
 export function addDays(value: string, days: number): string {
   const date = parseDay(value)
   date.setUTCDate(date.getUTCDate() + days)
