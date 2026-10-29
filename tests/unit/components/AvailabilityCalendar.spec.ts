@@ -25,6 +25,23 @@ describe('AvailabilityCalendar', () => {
     expect(day('2026-10-25')).toContain('day-today')
   })
 
+  it('marks the departure day as half booked', async () => {
+    const wrapper = await mountCalendar()
+    await wrapper.find('[aria-label="Mois suivant"]').trigger('click')
+
+    expect(wrapper.find('[data-day="2026-11-01"]').classes()).toContain('day-departure')
+    expect(wrapper.find('[data-day="2026-11-02"]').classes()).not.toContain('day-departure')
+  })
+
+  it('shows a full booked day when someone arrives the day others leave', async () => {
+    const next: Booking = { id: 2, name: 'Les Martin', start_date: '2026-11-01', end_date: '2026-11-03' }
+    const wrapper = await mountSuspended(AvailabilityCalendar, { props: { bookings: [louEtBenj, next], today: '2026-10-25' } })
+    await wrapper.find('[aria-label="Mois suivant"]').trigger('click')
+
+    expect(wrapper.find('[data-day="2026-11-01"]').classes()).toContain('day-booked')
+    expect(wrapper.find('[data-day="2026-11-01"]').classes()).not.toContain('day-departure')
+  })
+
   it('moves to the next month and cannot go back before the current one', async () => {
     const wrapper = await mountCalendar()
     const previous = wrapper.find('[aria-label="Mois précédent"]')

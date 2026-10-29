@@ -1,12 +1,12 @@
 import { describe, expect, it } from 'vitest'
 import {
   type Booking,
-  bookingEmail,
   bookingStats,
   checkStay,
   describeHouseStatus,
   findOverlap,
   houseStatus,
+  isDepartureDay,
   isNightBooked,
   upcomingBookings,
 } from '~/utils/bookings'
@@ -31,6 +31,13 @@ describe('isNightBooked', () => {
     expect(isNightBooked(bookings, '2026-10-29')).toBe(true)
     expect(isNightBooked(bookings, '2026-10-31')).toBe(true)
     expect(isNightBooked(bookings, '2026-11-01')).toBe(false)
+  })
+})
+
+describe('isDepartureDay', () => {
+  it('flags the day a stay ends', () => {
+    expect(isDepartureDay(bookings, '2026-11-01')).toBe(true)
+    expect(isDepartureDay(bookings, '2026-10-31')).toBe(false)
   })
 })
 
@@ -79,17 +86,6 @@ describe('checkStay', () => {
 
   it('counts the nights of a free stay', () => {
     expect(checkStay(bookings, today, '2026-11-07', '2026-11-10')).toEqual({ state: 'free', nights: 3 })
-  })
-})
-
-describe('bookingEmail', () => {
-  it('names who comes and when, without choosing the sender', () => {
-    const email = bookingEmail({ name: 'Mamie & Papi', start_date: '2026-11-07', end_date: '2026-11-10' })
-
-    expect(email).toEqual({
-      subject: 'Nouveau séjour : Mamie & Papi',
-      text: 'Mamie & Papi a réservé la maison du samedi 7 au mardi 10 novembre (3 nuits).',
-    })
   })
 })
 

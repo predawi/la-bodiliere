@@ -70,9 +70,24 @@ describe('signup page', () => {
     expect(addBooking).toHaveBeenCalledWith({ name: 'Mamie & Papi', start_date: '2026-11-07', end_date: '2026-11-10' })
     expect(sendMail).toHaveBeenCalledWith(expect.objectContaining({
       subject: 'Nouveau séjour : Mamie & Papi',
-      text: 'Mamie & Papi a réservé la maison du samedi 7 au mardi 10 novembre (3 nuits).',
+      text: expect.stringContaining('Arrivée : Samedi 7 novembre 2026'),
+      html: expect.stringContaining("C'est réservé pour Mamie &amp; Papi !"),
     }))
     expect(wrapper.text()).toContain("C'est réservé !")
+  })
+
+  it('offers to add the saved stay to a personal calendar', async () => {
+    const wrapper = await fillForm('Mamie & Papi', '2026-11-07', '2026-11-10')
+
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+
+    const google = wrapper.find('a[href^="https://calendar.google.com"]')
+    const ics = wrapper.find('a[download="sejour-bodiliere.ics"]')
+    expect(wrapper.text()).toContain('Ajouter à mon agenda')
+    expect(google.text()).toBe('Google Agenda')
+    expect(google.attributes('href')).toContain('dates=20261107%2F20261111')
+    expect(decodeURIComponent(ics.attributes('href')!)).toContain('DTSTART;VALUE=DATE:20261107')
   })
 
   it('keeps the form and explains when saving fails', async () => {

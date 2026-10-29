@@ -4,6 +4,7 @@ import type { NewBooking } from "~/utils/bookings";
 const today = useToday();
 const { bookings, addBooking } = useBookings();
 const mail = useMail();
+const siteUrl = useRequestURL().origin;
 
 const name = ref("");
 const startDate = ref("");
@@ -11,6 +12,14 @@ const endDate = ref("");
 const saving = ref(false);
 const saveFailed = ref(false);
 const saved = ref<NewBooking | null>(null);
+
+const calendarLinks = computed(
+  () =>
+    saved.value && {
+      google: googleCalendarUrl(saved.value, siteUrl),
+      ics: icsDataUrl(bookingIcs(saved.value, siteUrl)),
+    },
+);
 
 const upcoming = computed(() => upcomingBookings(bookings.value, today.value));
 const check = computed(() =>
@@ -44,15 +53,8 @@ async function save() {
 
 function notifyFamily(booking: NewBooking) {
   mail
-    .send(bookingEmail(booking))
+    .send(bookingEmail(booking, siteUrl))
     .catch((error) => console.warn("Booking e-mail not sent", error));
-}
-
-function bookAgain() {
-  saved.value = null;
-  name.value = "";
-  startDate.value = "";
-  endDate.value = "";
 }
 </script>
 
@@ -73,18 +75,27 @@ function bookAgain() {
 
     <StayCard :booking="{ id: 0, ...saved }" highlighted readonly />
 
-    <div class="flex flex-col gap-3 sm:flex-row">
-      <NuxtLink to="/" class="button button-primary button-lg w-full sm:w-auto"
-        >Retour à l'accueil</NuxtLink
-      >
-      <button
-        type="button"
-        class="button button-secondary w-full sm:w-auto"
-        @click="bookAgain"
-      >
-        Réserver d'autres dates
-      </button>
-    </div>
+    <section v-if="calendarLinks" class="flex flex-col gap-3">
+      <h2 class="m-0 flex items-center gap-2 font-sans text-lg font-medium">
+        <AppIcon name="calendar" :size="24" class="text-sea-strong" />
+        Ajouter à mon agenda
+      </h2>
+      <div class="flex flex-col gap-3 sm:flex-row">
+        <a
+          :href="calendarLinks.google"
+          target="_blank"
+          rel="noopener"
+          class="button button-secondary w-full sm:w-auto"
+          >Google Agenda</a
+        >
+        <a
+          :href="calendarLinks.ics"
+          download="sejour-bodiliere.ics"
+          class="button button-secondary w-full sm:w-auto"
+          >iPhone, Outlook ou autre</a
+        >
+      </div>
+    </section>
   </div>
 
   <div v-else class="flex flex-col gap-8">

@@ -1,4 +1,4 @@
-import { addDays, countNights, dayOf, formatLongDate, formatNights, formatStayRange } from './dates'
+import { addDays, countNights, dayOf, formatLongDate } from './dates'
 
 export interface Booking {
   id: number
@@ -28,6 +28,10 @@ export function isNightBooked(bookings: Booking[], day: string): boolean {
   return bookings.some(booking => dayOf(booking.start_date) <= day && day < dayOf(booking.end_date))
 }
 
+export function isDepartureDay(bookings: Booking[], day: string): boolean {
+  return bookings.some(booking => dayOf(booking.end_date) === day)
+}
+
 export function findOverlap(bookings: Booking[], start: string, end: string): Booking | undefined {
   return bookings.find(booking => dayOf(booking.start_date) < end && dayOf(booking.end_date) > start)
 }
@@ -46,15 +50,6 @@ export function checkStay(bookings: Booking[], today: string, start: string, end
 
   const booking = findOverlap(bookings, start, end)
   return booking ? { state: 'overlap', booking } : { state: 'free', nights: countNights(start, end) }
-}
-
-export function bookingEmail(booking: NewBooking) {
-  const range = formatStayRange(booking.start_date, booking.end_date, false)
-  const nights = formatNights(countNights(booking.start_date, booking.end_date))
-  return {
-    subject: `Nouveau séjour : ${booking.name}`,
-    text: `${booking.name} a réservé la maison ${range} (${nights}).`,
-  }
 }
 
 export function bookingStats(bookings: Booking[]) {

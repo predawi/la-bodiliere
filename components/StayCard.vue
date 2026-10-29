@@ -16,7 +16,7 @@ defineEmits<{ delete: [] }>()
         {{ badge }}
       </span>
     </div>
-    <p class="m-0 min-w-0 text-[19px] leading-snug">
+    <p class="m-0 min-w-0 text-[19px] leading-snug sm:col-start-1">
       {{ formatStayRange(booking.start_date, booking.end_date) }}
       <span class="text-base text-ink-muted">· {{ formatNights(countNights(booking.start_date, booking.end_date)) }}</span>
     </p>

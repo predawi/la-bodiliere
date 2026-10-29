@@ -16,12 +16,15 @@ const month = computed(() => {
 
 const grid = computed(() => monthGrid(month.value.year, month.value.index))
 
+function occupancyClass(day: string) {
+  if (isNightBooked(props.bookings, day)) return 'day-booked font-medium'
+  if (isDepartureDay(props.bookings, day)) return 'day-departure'
+  return 'bg-surface-sunk'
+}
+
 function dayClass(day: string) {
   if (day < props.today) return 'text-ink-muted'
-  return [
-    isNightBooked(props.bookings, day) ? 'day-booked font-medium' : 'bg-surface-sunk',
-    day === props.today && 'day-today font-semibold',
-  ]
+  return [occupancyClass(day), day === props.today && 'day-today font-semibold']
 }
 </script>
 
@@ -67,6 +70,7 @@ function dayClass(day: string) {
 
       <div class="flex flex-wrap gap-x-6 gap-y-2 text-[15px] text-ink-muted">
         <span class="inline-flex items-center gap-2"><i class="day-booked size-[18px] rounded-[5px]" />Maison prise</span>
+        <span class="inline-flex items-center gap-2"><i class="day-departure size-[18px] rounded-[5px]" />Jour de départ</span>
         <span class="inline-flex items-center gap-2"><i class="day-today size-[18px] rounded-[5px] bg-surface-sunk" />Aujourd'hui</span>
       </div>
     </div>
@@ -78,6 +82,32 @@ function dayClass(day: string) {
   background-color: var(--sea-tint);
   background-image: repeating-linear-gradient(135deg, transparent 0 6px, color-mix(in srgb, var(--sea) 18%, transparent) 6px 7.5px);
   box-shadow: inset 0 0 0 1.5px var(--sea);
+}
+
+/* The morning is still taken, the evening is free: only the top-left half is booked. */
+.day-departure {
+  position: relative;
+  z-index: 0;
+  background-color: var(--surface-sunk);
+}
+
+.day-departure::before,
+.day-departure::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+}
+
+.day-departure::before {
+  background-color: var(--sea-tint);
+  background-image: repeating-linear-gradient(135deg, transparent 0 6px, color-mix(in srgb, var(--sea) 18%, transparent) 6px 7.5px);
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+
+.day-departure::after {
+  background: linear-gradient(to bottom right, transparent calc(50% - 0.75px), var(--sea) calc(50% - 0.75px) calc(50% + 0.75px), transparent calc(50% + 0.75px));
 }
 
 .day-today {
