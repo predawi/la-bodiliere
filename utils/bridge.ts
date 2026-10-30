@@ -1,49 +1,42 @@
 import { formatTime, parisDay } from './dates'
 
-// The Colbert bridge opens 2 h before high tide and closes 45 min after.
-const OPENS_BEFORE_MS = 2 * 60 * 60_000
-const CLOSES_AFTER_MS = 45 * 60_000
-
-export interface BridgeOpening {
-  highTide: Date
-  opensAt: Date
-  closesAt: Date
-}
+// The Colbert bridge opens for about 5 min to let boats through, 2 h before high tide and again 45 min after.
+const OPENING_OFFSETS_MS = [-2 * 60 * 60_000, 45 * 60_000]
+const OPENING_MS = 5 * 60_000
 
 export interface BridgeStatus {
   isOpen: boolean
-  opening: BridgeOpening | undefined
+  // The opening under way first when the bridge is up, then the next ones.
+  openings: Date[]
 }
 
-export function bridgeOpenings(highTides: string[]): BridgeOpening[] {
+export function bridgeOpenings(highTides: string[]): Date[] {
   return highTides
-    .map(time => new Date(time))
+    .flatMap(time => OPENING_OFFSETS_MS.map(offset => new Date(new Date(time).getTime() + offset)))
     .sort((a, b) => a.getTime() - b.getTime())
-    .map(highTide => ({
-      highTide,
-      opensAt: new Date(highTide.getTime() - OPENS_BEFORE_MS),
-      closesAt: new Date(highTide.getTime() + CLOSES_AFTER_MS),
-    }))
 }
 
-// The opening under way when the bridge is up, otherwise the next one.
 export function bridgeStatus(highTides: string[], now: Date): BridgeStatus {
-  const opening = bridgeOpenings(highTides).find(({ closesAt }) => now < closesAt)
-  return { isOpen: !!opening && now >= opening.opensAt, opening }
+  const openings = bridgeOpenings(highTides).filter(opening => now.getTime() < opening.getTime() + OPENING_MS)
+  return { isOpen: !!openings[0] && now >= openings[0], openings }
 }
 
-export function describeBridge({ isOpen, opening }: BridgeStatus, now: Date): { title: string, detail: string } {
-  if (isOpen && opening) {
+function at(opening: Date, previous: Date): string {
+  const day = parisDay(opening) === parisDay(previous) ? '' : 'demain '
+  return `${day}à ${formatTime(opening)}`
+}
+
+export function describeBridge({ isOpen, openings }: BridgeStatus, now: Date): { title: string, detail: string } {
+  const [first, second] = openings
+  if (isOpen && first) {
     return {
       title: 'Levé, on ne peut pas traverser',
-      detail: `Il redescend à ${formatTime(opening.closesAt)} · pleine mer à ${formatTime(opening.highTide)}`,
+      detail: `Il redescend vers ${formatTime(new Date(first.getTime() + OPENING_MS))}`,
     }
   }
-  if (!opening) return { title: 'Baissé, on peut traverser', detail: '' }
 
-  const day = parisDay(opening.opensAt) === parisDay(now) ? '' : 'demain '
-  return {
-    title: 'Baissé, on peut traverser',
-    detail: `Il se lève ${day}de ${formatTime(opening.opensAt)} à ${formatTime(opening.closesAt)}`,
-  }
+  const title = 'Baissé, on peut traverser'
+  if (!first) return { title, detail: '' }
+  if (!second) return { title, detail: `Il s'ouvrira ${at(first, now)}` }
+  return { title, detail: `Il s'ouvrira une fois ${at(first, now)} et une fois ${at(second, first)}` }
 }

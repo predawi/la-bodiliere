@@ -18,11 +18,11 @@ describe('ColbertBridge', () => {
     const wrapper = await mountSuspended(ColbertBridge)
 
     expect(wrapper.text()).toContain('Baissé, on peut traverser')
-    expect(wrapper.text()).toContain('Il se lève de 11h16 à 14h01')
+    expect(wrapper.text()).toContain("Il s'ouvrira une fois à 11h16 et une fois à 14h01")
   })
 
   it('shows a raised bridge during the opening', async () => {
-    vi.setSystemTime(new Date('2026-10-29T11:30:00Z'))
+    vi.setSystemTime(new Date('2026-10-29T10:18:00Z'))
     const wrapper = await mountSuspended(ColbertBridge)
 
     expect(wrapper.text()).toContain('Levé, on ne peut pas traverser')
