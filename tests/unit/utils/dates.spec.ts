@@ -10,6 +10,7 @@ import {
   formatTime,
   monthGrid,
   parisDay,
+  parisTime,
   parseDay,
 } from '~/utils/dates'
 
@@ -124,5 +125,17 @@ describe('formatTime', () => {
 
   it('writes midnight as 0 h', () => {
     expect(formatTime(new Date('2026-12-01T23:10:00Z'))).toBe('0h10')
+  })
+})
+
+describe('parisTime', () => {
+  it('turns a Paris time into the right instant, summer and winter', () => {
+    expect(parisTime('2026-07-01', 7, 30).toISOString()).toBe('2026-07-01T05:30:00.000Z')
+    expect(parisTime('2026-12-01', 18, 30).toISOString()).toBe('2026-12-01T17:30:00.000Z')
+  })
+
+  it('uses the new offset on daylight saving days', () => {
+    expect(parisTime('2026-03-29', 7, 30).toISOString()).toBe('2026-03-29T05:30:00.000Z')
+    expect(parisTime('2026-10-25', 7, 30).toISOString()).toBe('2026-10-25T06:30:00.000Z')
   })
 })

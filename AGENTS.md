@@ -9,7 +9,7 @@ Site familial de réservation de la maison de La Bodilière (près de Dieppe). I
 - Supabase via `@nuxtjs/supabase` (`useSupabaseClient()`), sans authentification (`redirect: false`).
 - `@nuxt/image` pour les images, `nuxt-mail` (Mailgun) pour les e-mails.
 - Météo : API OpenWeather (Dieppe, lat 49.92, lon 1.07), appelée uniquement côté serveur par `server/api/weather.get.ts` (cache 10 min).
-- Marées : API api-maree.fr (site `dieppe`), appelée côté serveur par `server/api/tides.get.ts` (cache 1 h, heures demandées en UTC). Le pont Colbert s'ouvre environ 5 min, 2 h avant et 45 min après chaque pleine mer (`utils/bridge.ts`).
+- Marées : API api-maree.fr (site `dieppe`), appelée côté serveur par `server/api/tides.get.ts` (cache 1 h, heures demandées en UTC). Le pont Colbert s'ouvre environ 5 min, seulement s'il y a des bateaux : 2 h et 45 min avant chaque pleine mer, 45 min après, et chaque jour à 7 h 30 et 18 h 30 (avis de la capitainerie du 8 juillet 2026, `utils/bridge.ts`).
 - Déploiement sur Netlify. Gestionnaire de paquets : **yarn 1** (ne pas utiliser npm ni pnpm, ne pas créer d'autre lockfile).
 - Node **22** (`.nvmrc`, lu aussi par Netlify) : `nvm use` avant toute commande. Vitest ne tourne pas sous Node 16.
 

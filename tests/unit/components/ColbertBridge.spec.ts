@@ -18,14 +18,14 @@ describe('ColbertBridge', () => {
     const wrapper = await mountSuspended(ColbertBridge)
 
     expect(wrapper.text()).toContain('Baissé, on peut traverser')
-    expect(wrapper.text()).toContain("Il s'ouvrira une fois à 11h16 et une fois à 14h01")
+    expect(wrapper.text()).toContain("S'il y a des bateaux, il se lèvera à 11h16 puis à 12h31")
   })
 
-  it('shows a raised bridge during the opening', async () => {
+  it('shows a raised bridge during an opening', async () => {
     vi.setSystemTime(new Date('2026-10-29T10:18:00Z'))
     const wrapper = await mountSuspended(ColbertBridge)
 
-    expect(wrapper.text()).toContain('Levé, on ne peut pas traverser')
+    expect(wrapper.text()).toContain("Levé s'il y a des bateaux")
     expect(wrapper.find('.-rotate-\\[18deg\\]').exists()).toBe(true)
   })
 

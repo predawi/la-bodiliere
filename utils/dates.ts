@@ -23,6 +23,17 @@ export function formatTime(date: Date): string {
   return `${Number(part('hour'))}h${part('minute')}`
 }
 
+export function parisTime(day: string, hours: number, minutes: number): Date {
+  const wallClock = parseDay(day).getTime() + (hours * 60 + minutes) * 60_000
+  const parisOffset = (date: Date) => {
+    const local = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Paris', dateStyle: 'short', timeStyle: 'medium' }).format(date)
+    return Date.parse(`${local.replace(' ', 'T')}Z`) - date.getTime()
+  }
+  // Checked twice so a time just after a daylight saving change gets the new offset.
+  const guess = new Date(wallClock - parisOffset(new Date(wallClock)))
+  return new Date(wallClock - parisOffset(guess))
+}
+
 export function addDays(value: string, days: number): string {
   const date = parseDay(value)
   date.setUTCDate(date.getUTCDate() + days)
